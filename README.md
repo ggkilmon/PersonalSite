@@ -69,3 +69,6 @@ The pipeline zips the results of the CodeBuild phase and extracts and copies the
 
 ## Notes
 One thing to note with the above design, since the files are served via CloudFront, they are cached on various Amazon Edge nodes.  The TTL configured in CloudFront will eventually invalidate the cache on thoes nodes and the updates will eventually be served.  Since this is a personal site, I'm ok with that.  If I needed things to move to production quicker, I would adjust the TTL to a lower value and/or invalidate the offending assets within CloudFront itself.
+
+## Updates
+One aspect of the site is that it deploys some data values with the source code in a .json file.  I'd like to update that to pull from some other source and pull in on page load.  I'm still deciding on whether its best to put in DynamoDB or statically in S3 served from a Lambda@Edge function.
