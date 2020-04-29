@@ -76,10 +76,14 @@ The artifacts section is the output of this build.  As I said above, the content
 
 The pipeline zips the results of the CodeBuild phase and extracts and copies the files to the S3 bucket.  Once complete, updates are in the site.
 
+## Data
+
+Data used to be stored with the site's source code and could only be updated by redeploying the whole site.  I separated the Resume pdf and Personal data from the source code and loaded them into an S3 bucket.  That S3 bucket is private, so the files can't be served directly from there.  
+
+I also created a Lambda function to serve these files from the S3 bucket.  This is more secure because I only allow the IAM role the Lambda uses to access the S3 bucket.  
+
+The Lambda function isn't directly accessible via a web request, so I had a couple options I considered.  I could set up another CloudFront distribution to run the Lambda@Edge.  Another alternative is to set up an API Gateway in front of the Lamda function.  I chose the API Gateway for simplicity and cost savings.
+
 ## Notes
 
-One thing to note with the above design, since the files are served via CloudFront, they are cached on various Amazon Edge nodes.  The TTL configured in CloudFront will eventually invalidate the cache on those nodes and the updates will eventually be served.  Since this is a personal site, I'm ok with that.  If I needed things to move to production quicker, I would adjust the TTL to a lower value and/or invalidate the offending assets within CloudFront itself.
-
-## Updates
-
-One aspect of the site is that it deploys some data values with the source code in a .json file.  I'd like to update that to pull from some other source and pull in on page load.  I'm still deciding on whether its best to put in DynamoDB or statically in S3 served from a Lambda@Edge function.
+One thing to note with the above design, since the web files are served via CloudFront, they are cached on various Amazon Edge nodes.  The TTL configured in CloudFront will eventually invalidate the cache on those nodes and the updates will eventually be served.  Since this is a personal site, I'm ok with that.  If I needed things to move to production quicker, I would adjust the TTL to a lower value and/or invalidate the offending assets within CloudFront itself.
